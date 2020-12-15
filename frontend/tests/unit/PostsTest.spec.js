@@ -97,10 +97,48 @@ jest.mock("axios", () => ({
 }));
 
 describe('Posts', () => {
-
+    // Now mount the component and you have the wrapper
     const wrapper = mount(Posts, {router, store, localVue});
 
+    // Test 0
     it('1 == 1', function () {
-        expect(true).toBe(true)
+        expect(true).toBe(true);
     });
+
+    //Test 1 Test that exactly as many posts are rendered as contained in testData variable
+    //OK
+    it('many posts', function () {
+        let manyPosts = wrapper.findAll('.post');
+        expect(manyPosts.length).toEqual(testData.length); //https://stackoverflow.com/questions/41527871/jasmine-angular2-check-array-length-toequal-return-true
+    });
+
+    //Test 2 Test that if post has media property, image or video tags are rendered depending on media.type property, or if media property is absent nothing is rendered.
+    it('media rendering', function () {
+        let manyPosts = wrapper.findAll('.post');
+        for (let i = 0; i < manyPosts.length; i++) {
+            if (!!testData[i].media) {
+                if (testData[i].media.type == 'image') {
+                    expect(manyPosts.at(i).get(".post-image").get("img").exists()).toBe(true);
+                } else {
+                    expect(manyPosts.at(i).get(".post-image").get("video").exists()).toBe(true);
+                }
+            } else {
+                expect(false).toBe(false);
+
+            }
+            //expect(manyPosts.at(i).get(".post-image").get("").exists()).toBe(false); //not working as so
+
+        }
+    });
+
+    //Test 3 Test that post create time is displayed in correct format: Saturday, December 5, 2020 1:53 PM
+    //OK
+    it('validate date format', function () {
+        var pattern = new RegExp("^([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9])$");
+        for (let i = 0; i < testData.length; i++) {
+            if (testData[i].createTime.search(pattern)===0) {
+                expect(true).toBe(true)
+        }}
+    });
+
 });

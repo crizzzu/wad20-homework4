@@ -1,4 +1,6 @@
 const UserModel = require('../models/UserModel');
+const jwt = require("../library/jwt");
+
 
 module.exports = (request, response, next) => {
 
@@ -9,9 +11,13 @@ module.exports = (request, response, next) => {
         decoded user from access token.
     */
 
-    if (request.headers.authorization) {
-        UserModel.getById(1, (user) => {
+    //i am not sure if this works or not, atleast no errors
+    if (request.headers.authorization) { //https://stackoverflow.com/questions/38552003/how-to-decode-jwt-token-in-javascript-without-using-a-library
+        let accessToken = request.headers.authorization;
+        let verify = jwt.verifyAccessToken(accessToken);
+        UserModel.getById(verify.id, (user) => {
             request.currentUser = user;
+            request.accessToken = accessToken;
             next();
         });
     } else {
